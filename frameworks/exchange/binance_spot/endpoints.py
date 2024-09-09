@@ -21,6 +21,7 @@ class BinanceSpotEndpoints(Endpoints):
             getOhlcv=Endpoint(url="/api/v3/klines", method="GET"),
             getTicker=Endpoint(url="/api/v3/ticker/price", method="GET"),
             getOpenOrders=Endpoint(url="/api/v3/openOrders", method="GET"),
+            getPosition=Endpoint(url="/api/v3/myTrades", method="GET"),
         )
 
         self.load_additional(

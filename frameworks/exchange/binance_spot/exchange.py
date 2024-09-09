@@ -2,21 +2,21 @@ from typing import List, Dict, Optional
 
 from frameworks.exchange.base.structures.order import Order
 from frameworks.exchange.base.exchange import Exchange
-from frameworks.exchange.binance.endpoints import BinanceEndpoints
-from frameworks.exchange.binance.formats import BinanceFormats
-from frameworks.exchange.binance.client import BinanceClient
-from frameworks.exchange.binance.orderid import BinanceOrderIdGenerator
+from frameworks.exchange.binance_spot.endpoints import BinanceSpotEndpoints
+from frameworks.exchange.binance_spot.formats import BinanceSpotFormats
+from frameworks.exchange.binance_spot.client import BinanceSpotClient
+from frameworks.exchange.binance_spot.orderid import BinanceSpotOrderIdGenerator
 
-class Binance(Exchange):
+class BinanceSpot(Exchange):
     def __init__(self, api_key: str, api_secret: str) -> None:
         self.api_key = api_key
         self.api_secret = api_secret
-        
+
         super().__init__(
-            client=BinanceClient(self.api_key, self.api_secret),
-            formats=BinanceFormats(),
-            endpoints=BinanceEndpoints(),
-            orderIdGenerator=BinanceOrderIdGenerator()
+            client=BinanceSpotClient(self.api_key, self.api_secret),
+            formats=BinanceSpotFormats(),
+            endpoints=BinanceSpotEndpoints(),
+            orderIdGenerator=BinanceSpotOrderIdGenerator()
         )
 
     async def create_order(
@@ -32,7 +32,7 @@ class Binance(Exchange):
             data=self.client.sign_headers(endpoint.method, headers),
             signed=True,
         )
-    
+
     async def batch_create_orders(
         self,
         orders: List[Order]
@@ -59,7 +59,7 @@ class Binance(Exchange):
             data=self.client.sign_headers(endpoint.method, headers),
             signed=True,
         )
-    
+
     async def batch_amend_orders(
         self,
         orders: List[Order]
@@ -84,7 +84,7 @@ class Binance(Exchange):
             data=self.client.sign_headers(endpoint.method, headers),
             signed=True,
         )
-    
+
     async def batch_cancel_orders(
         self,
         orders: List[Order]
@@ -98,7 +98,7 @@ class Binance(Exchange):
             data=self.client.sign_headers(endpoint.method, headers),
             signed=True,
         )
-    
+
     async def cancel_all_orders(self, symbol: str) -> Dict:
         endpoint = self.endpoints.cancelAllOrders
         headers = self.formats.cancel_all_orders(symbol)
@@ -209,7 +209,7 @@ class Binance(Exchange):
             params=params,
             signed=False,
         )
- 
+
     async def warmup(self) -> None:
         try:
             for symbol in (await self.get_exchange_info())["symbols"]:
@@ -225,7 +225,7 @@ class Binance(Exchange):
                             self.data["lot_size"] = float(filter["stepSize"])
 
         except Exception as e:
-            await self.logging.error(f"Exchange warmup: {e}")
+            await self.logging.error(topic="EXCH", msg=f"Exchange warmup: {e}")
 
         finally:
-            await self.logging.info(f"Exchange warmup sequence complete.")
+            await self.logging.info(topic="EXCH", msg=f"Exchange warmup sequence complete.")

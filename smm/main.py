@@ -28,18 +28,18 @@ async def main():
         )
 
     except KeyboardInterrupt or asyncio.CancelledError:
-        await ss.logging.critical(f"Process manually interupted by user...")
-        raise 
-    
+        await ss.logging.critical(topic="CLIENT", msg=f"Process manually interupted by user...")
+        raise
+
     except Exception as e:
-        await ss.logging.critical(f"Unexpected exception occurred: {e}")
-        raise 
+        await ss.logging.critical(topic="CLIENT", msg=f"Unexpected exception occurred: {e}")
+        raise
 
     finally:
-        await ss.logging.critical("Starting shutdown sequence...")
+        await ss.logging.critical(topic="CLIENT", msg="Starting shutdown sequence...")
         await ss.websocket.shutdown()
         await ss.exchange.shutdown()
-        await ss.logging.info("Goodnight...")
+        await ss.logging.info(topic="CLIENT", msg="Goodnight...")
         await ss.logging.shutdown()
 
 if __name__ == "__main__":

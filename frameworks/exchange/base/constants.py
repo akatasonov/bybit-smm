@@ -90,13 +90,13 @@ class SideConverter(StrNumConverter):
     ----------
     BUY : str
         The string representation for the "buy" side.
-    
+
     SELL : str
         The string representation for the "sell" side.
     """
 
     def __init__(self, BUY: str, SELL: str) -> None:
-        super().__init__(str_to_int={f"{BUY}": Side.BUY, f"{SELL}": Side.SELL})
+        super().__init__(str_to_num={f"{BUY}": Side.BUY, f"{SELL}": Side.SELL})
 
 
 class OrderTypeConverter(StrNumConverter):
@@ -134,7 +134,7 @@ class OrderTypeConverter(StrNumConverter):
         TAKE_PROFIT_LIMIT: str = None,
     ) -> None:
         super().__init__(
-            str_to_int={
+            str_to_num={
                 f"{LIMIT}": OrderType.LIMIT,
                 f"{MARKET}": OrderType.MARKET,
                 f"{STOP_LIMIT}": OrderType.STOP_LIMIT,
@@ -169,7 +169,7 @@ class TimeInForceConverter(StrNumConverter):
 
     def __init__(self, GTC: str, FOK: str, POST_ONLY: str) -> None:
         super().__init__(
-            str_to_int={
+            str_to_num={
                 f"{GTC}": TimeInForce.GTC,
                 f"{FOK}": TimeInForce.FOK,
                 f"{POST_ONLY}": TimeInForce.POST_ONLY,
@@ -200,7 +200,7 @@ class PositionDirectionConverter(StrNumConverter):
 
     def __init__(self, LONG: str, SHORT: str) -> None:
         super().__init__(
-            str_to_int={
+            str_to_num={
                 f"{LONG}": PositionDirection.LONG,
                 f"{SHORT}": PositionDirection.SHORT,
             }

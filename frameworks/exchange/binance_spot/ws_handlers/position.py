@@ -1,10 +1,10 @@
 from typing import List, Dict
 
 from frameworks.exchange.base.ws_handlers.position import Position, PositionHandler
-from frameworks.exchange.binance.types import BinancePositionDirectionConverter
+from frameworks.exchange.binance_spot.types import BinancePositionDirectionConverter
 
 
-class BinancePositionHandler(PositionHandler):
+class BinanceSpotPositionHandler(PositionHandler):
     _event_reason_ = "ORDER"
 
     def __init__(self, position: Position, symbol: str) -> None:
@@ -18,7 +18,7 @@ class BinancePositionHandler(PositionHandler):
             for position in recv:
                 if position["symbol"] != self.symbol:
                     continue
-                
+
                 self.position = Position(
                     symbol=self.symbol,
                     side=self.position_side_converter.to_num(position.get("side")),

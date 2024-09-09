@@ -4,7 +4,7 @@ from typing import Dict
 from frameworks.exchange.base.ws_handlers.orderbook import Orderbook, OrderbookHandler
 
 
-class BinanceOrderbookHandler(OrderbookHandler):
+class BinanceSpotOrderbookHandler(OrderbookHandler):
     def __init__(self, orderbook: Orderbook) -> None:
         super().__init__(orderbook)
 
@@ -22,13 +22,13 @@ class BinanceOrderbookHandler(OrderbookHandler):
     def process(self, recv: Dict) -> None:
         try:
             seq_id = int(recv.get("u"))
- 
-            if recv.get("b", []):
-                bids = np.array(recv["b"], dtype=np.float64)
+
+            if recv.get("bids", []):
+                bids = np.array(recv["bids"], dtype=np.float64)
                 self.orderbook.update_bids(bids, seq_id)
 
-            if recv.get("a", []):
-                asks = np.array(recv["a"], dtype=np.float64)
+            if recv.get("asks", []):
+                asks = np.array(recv["asks"], dtype=np.float64)
                 self.orderbook.update_asks(asks, seq_id)
 
         except Exception as e:

@@ -1,12 +1,13 @@
 from typing import List, Dict
 
 from frameworks.tools.logging import time_ms
-from frameworks.exchange.base.constants import Order, OrderType
+from frameworks.exchange.base.constants import OrderType
+from frameworks.exchange.base.structures.order import Order
 from frameworks.exchange.base.formats import Formats
-from frameworks.exchange.binance.types import BinanceSideConverter, BinanceOrderTypeConverter, BinanceTimeInForceConverter, BinancePositionDirectionConverter
+from frameworks.exchange.binance_spot.types import BinanceSideConverter, BinanceOrderTypeConverter, BinanceTimeInForceConverter, BinancePositionDirectionConverter
 
 
-class BinanceFormats(Formats):
+class BinanceSpotFormats(Formats):
     def __init__(self) -> None:
         super().__init__(
             convert_side=BinanceSideConverter(),
@@ -38,10 +39,10 @@ class BinanceFormats(Formats):
             case OrderType.LIMIT:
                 format["price"] = str(order.price)
                 return format
-            
+
             case _:
                 raise NotImplementedError(f"OrderType not implemented: {order.orderType}")
-    
+
     def batch_create_orders(
         self,
         orders: List[Order]
@@ -59,7 +60,7 @@ class BinanceFormats(Formats):
             **self.base_payload,
             "timestamp": str(time_ms()),
         }
-    
+
     def amend_order(
         self,
         order
@@ -83,17 +84,17 @@ class BinanceFormats(Formats):
             del single_amend["recvWindow"]
             del single_amend["timestamp"]
             batched_amends.append(order)
-    
+
         return {
             "batchOrders": batched_amends,
             **self.base_payload,
             "timestamp": str(time_ms()),
         }
-    
+
     def cancel_order(self, order) -> Dict:
         return {
             **self.base_payload,
-            "symbol": order.symbol, 
+            "symbol": order.symbol,
             **({"orderId": order.orderId} if order.orderId else {}),
             **({"origClientOrderId": order.clientOrderId} if order.clientOrderId else {}),
             "timestamp": str(time_ms())
@@ -107,11 +108,11 @@ class BinanceFormats(Formats):
             **self.base_payload,
             "timestamp": str(time_ms()),
         }
-    
+
     def cancel_all_orders(self, symbol: str) -> Dict:
         return {
             **self.base_payload,
-            "symbol": symbol, 
+            "symbol": symbol,
             "timestamp": str(time_ms())
         }
 

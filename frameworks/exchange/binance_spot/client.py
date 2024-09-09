@@ -6,7 +6,7 @@ from typing import Dict, Tuple
 from frameworks.exchange.base.client import Client
 
 
-class BinanceClient(Client):
+class BinanceSpotClient(Client):
     recv_window = 1000
 
     errors: Dict[int, Tuple[bool, str]] = {
@@ -66,4 +66,3 @@ class BinanceClient(Client):
             error_code,
             (False, f"Unknown error code: {error_code}")
         )
-        

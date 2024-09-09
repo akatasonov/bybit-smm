@@ -4,14 +4,14 @@ from typing import List, Dict, Any
 from frameworks.exchange.base.ws_handlers.ohlcv import OHLCV, Candles, OhlcvHandler
 
 
-class BinanceOhlcvHandler(OhlcvHandler):
+class BinanceSpotOhlcvHandler(OhlcvHandler):
     def __init__(self, ohlcv: Candles) -> None:
         super().__init__(ohlcv)
 
     def refresh(self, recv: List[List]) -> None:
         try:
             self.ohlcv.reset()
-            
+
             new_candles: List[OHLCV] = []
 
             for candle in recv:
@@ -32,7 +32,7 @@ class BinanceOhlcvHandler(OhlcvHandler):
     def process(self, recv: Dict[str, Any]) -> None:
         try:
             candle: Dict[str, str] = recv["k"]
-            
+
             self.ohlcv.add_single(OHLCV(
                 timestamp=float(candle.get("t")),
                 open=float(candle.get("o")),

@@ -2,40 +2,40 @@ import asyncio
 from typing import Tuple, Dict, List, Any
 
 from frameworks.exchange.base.websocket import WebsocketStream
-from frameworks.exchange.binance.exchange import Binance
-from frameworks.exchange.binance.endpoints import BinanceEndpoints
-from frameworks.exchange.binance.ws_handlers.orderbook import BinanceOrderbookHandler
-from frameworks.exchange.binance.ws_handlers.trades import BinanceTradesHandler
-from frameworks.exchange.binance.ws_handlers.markprice import BinanceTickerHandler
-from frameworks.exchange.binance.ws_handlers.ohlcv import BinanceOhlcvHandler
-from frameworks.exchange.binance.ws_handlers.orders import BinanceOrdersHandler
-from frameworks.exchange.binance.ws_handlers.position import BinancePositionHandler
+from frameworks.exchange.binance_spot.exchange import BinanceSpot
+from frameworks.exchange.binance_spot.endpoints import BinanceSpotEndpoints
+from frameworks.exchange.binance_spot.ws_handlers.orderbook import BinanceSpotOrderbookHandler
+from frameworks.exchange.binance_spot.ws_handlers.trades import BinanceSpotTradesHandler
+from frameworks.exchange.binance_spot.ws_handlers.ticker import BinanceSpotTickerHandler
+from frameworks.exchange.binance_spot.ws_handlers.ohlcv import BinanceSpotOhlcvHandler
+from frameworks.exchange.binance_spot.ws_handlers.orders import BinanceSpotOrdersHandler
+from frameworks.exchange.binance_spot.ws_handlers.position import BinanceSpotPositionHandler
 
 
-class BinanceWebsocket(WebsocketStream):
+class BinanceSpotWebsocket(WebsocketStream):
     """
     Handles Websocket connections and data management for Binance.
     """
 
-    def __init__(self, exch: Binance) -> None:
+    def __init__(self, exch: BinanceSpot) -> None:
         super().__init__()
         self.exch = exch
-        self.endpoints = BinanceEndpoints()
+        self.endpoints = BinanceSpotEndpoints()
 
     def create_handlers(self) -> None:
         self.public_handler_map = {
-            "depthUpdate": BinanceOrderbookHandler(self.data["orderbook"]),
-            "trade": BinanceTradesHandler(self.data["trades"]),
-            "kline": BinanceOhlcvHandler(self.data["ohlcv"]),
-            "markPriceUpdate": BinanceTickerHandler(self.data["ticker"]),
+            "depthUpdate": BinanceSpotOrderbookHandler(self.data["orderbook"]),
+            "trade": BinanceSpotTradesHandler(self.data["trades"]),
+            "kline": BinanceSpotOhlcvHandler(self.data["ohlcv"]),
+            "24hrTicker": BinanceSpotTickerHandler(self.data["ticker"]),
         }
         self.public_handler_map["bookTicker"] = self.public_handler_map["depthUpdate"]
 
         self.private_handler_map = {
-            "ORDER_TRADE_UPDATE": BinanceOrdersHandler(self.data["orders"], self.symbol),
-            "ACCOUNT_UPDATE": BinancePositionHandler(self.data["position"], self.symbol),
+            "ORDER_TRADE_UPDATE": BinanceSpotOrdersHandler(self.data["orders"], self.symbol),
+            "ACCOUNT_UPDATE": BinanceSpotPositionHandler(self.data["position"], self.symbol),
         }
-    
+
     async def refresh_orderbook_data(self, timer: int = 600) -> None:
         while True:
             try:
@@ -70,7 +70,7 @@ class BinanceWebsocket(WebsocketStream):
         while True:
             try:
                 ticker_data = await self.exch.get_ticker(self.symbol)
-                self.public_handler_map["markPriceUpdate"].refresh(ticker_data)
+                self.public_handler_map["24hrTicker"].refresh(ticker_data)
                 await asyncio.sleep(timer)
 
             except Exception as e:
@@ -83,7 +83,7 @@ class BinanceWebsocket(WebsocketStream):
                 "params": [
                     f"{self.symbol.lower()}@trade",
                     f"{self.symbol.lower()}@depth@100ms",
-                    f"{self.symbol.lower()}@markPrice@1s",
+                    f"{self.symbol.lower()}@ticker",
                     f"{self.symbol.lower()}@kline_1m",
                 ],
                 "id": 1,

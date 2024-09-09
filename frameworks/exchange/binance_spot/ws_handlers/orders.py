@@ -1,13 +1,13 @@
 from typing import List, Dict
 
 from frameworks.exchange.base.ws_handlers.orders import Order, Orders, OrdersHandler
-from frameworks.exchange.binance.types import (
-    BinanceSideConverter, 
-    BinanceOrderTypeConverter, 
+from frameworks.exchange.binance_spot.types import (
+    BinanceSideConverter,
+    BinanceOrderTypeConverter,
     BinanceTimeInForceConverter
 )
 
-class BinanceOrdersHandler(OrdersHandler):
+class BinanceSpotOrdersHandler(OrdersHandler):
     _overwrite_ = {"NEW", "PARTIALLY_FILLED"}
     _remove_ = {"CANCELLED", "EXPIRED", "FILLED", "EXPIRED_IN_MATCH"}
 
@@ -24,7 +24,7 @@ class BinanceOrdersHandler(OrdersHandler):
             for order in recv:
                 if order["symbol"] != self.symbol:
                     continue
-                
+
                 new_order = Order(
                     symbol=self.symbol,
                     side=self.side_converter.to_num(order.get("side")),
@@ -44,7 +44,7 @@ class BinanceOrdersHandler(OrdersHandler):
     def process(self, recv: Dict) -> None:
         try:
             order: Dict = recv["o"]
- 
+
             if order["s"] != self.symbol:
                 return None
 

@@ -65,7 +65,7 @@ class SharedState(ABC):
             "trades": Trades(length=1000),
             "orderbook": Orderbook(size=50), # NOTE: Modify size if required!
             "ticker": Ticker(),
-            
+
             "position": Position(),
             "orders": Orders(),
             "account_balance": 0.0,
@@ -108,7 +108,7 @@ class SharedState(ABC):
             Flag to indicate if the parameters are being reloaded.
         """
         pass
-    
+
     def load_exchange(self, exchange: str) -> None:
         """
         Loads the specified exchange and initializes the exchange and websocket objects.
@@ -145,7 +145,28 @@ class SharedState(ABC):
                     data=self.data
                 )
 
-            case "bybit": 
+            case "binance_spot":
+                from frameworks.exchange.binance_spot.exchange import BinanceSpot
+                from frameworks.exchange.binance_spot.websocket import BinanceSpotWebsocket
+
+                # NOTE: Binance requires capital symbols
+                self.symbol = self.symbol.upper()
+
+                self.exchange = BinanceSpot(self.api_key, self.api_secret)
+                self.exchange.load_required_refs(
+                    logging=self.logging,
+                    symbol=self.symbol,
+                    data=self.data
+                )
+
+                self.websocket = BinanceSpotWebsocket(self.exchange)
+                self.websocket.load_required_refs(
+                    logging=self.logging,
+                    symbol=self.symbol,
+                    data=self.data
+                )
+
+            case "bybit":
                 from frameworks.exchange.bybit.exchange import Bybit
                 from frameworks.exchange.bybit.websocket import BybitWebsocket
 
@@ -219,10 +240,10 @@ class SharedState(ABC):
         """
         self.api_key = os.getenv("API_KEY")
         self.api_secret = os.getenv("API_SECRET")
-            
+
         if not self.api_key or not self.api_secret:
             raise Exception("Missing/incorrect API credentials!")
-            
+
     def load_parameters(self, reload: bool=False) -> None:
         """
         Loads initial trading settings from the parameters YAML file.
@@ -239,7 +260,7 @@ class SharedState(ABC):
 
         except Exception as e:
             raise Exception(f"Error loading parameters: {e}")
-    
+
     async def record_state(self, interval: float=1.0) -> None:
         """
         Periodically saves all market/private data to a text file.
@@ -255,7 +276,7 @@ class SharedState(ABC):
                 "trades": self.data["trades"].recordable(),
                 "orderbook": self.data["orderbook"].recordable(),
                 "ticker": self.data["ticker"].recordable(),
-                
+
                 "position": self.data["position"].recordable(),
                 "orders": self.data["orders"].recordable(),
                 "account_balance": self.data["account_balance"],
@@ -271,7 +292,7 @@ class SharedState(ABC):
         Starts the internal processes such as warming up the exchange and starting the websocket.
         """
         await asyncio.gather(
-            self.exchange.warmup(), 
+            self.exchange.warmup(),
             self.websocket.start()
         )
 

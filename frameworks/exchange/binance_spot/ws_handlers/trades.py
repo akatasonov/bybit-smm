@@ -4,14 +4,14 @@ from frameworks.exchange.base.constants import Side
 from frameworks.exchange.base.ws_handlers.trades import Trade, Trades, TradesHandler
 
 
-class BinanceTradesHandler(TradesHandler):
+class BinanceSpotTradesHandler(TradesHandler):
     def __init__(self, trades: Trades) -> None:
         super().__init__(trades)
 
     def refresh(self, recv: List[Dict]) -> None:
         try:
             new_trades: List[Trade] = []
- 
+
             for trade in recv:
                 new_trades.append(Trade(
                     timestamp=float(trade.get("time")),
@@ -19,7 +19,7 @@ class BinanceTradesHandler(TradesHandler):
                     price=float(trade.get("price")),
                     size=float(trade.get("qty"))
                 ))
-            
+
             self.trades.add_many(new_trades)
 
         except Exception as e:

@@ -16,7 +16,7 @@ class TradingLogic:
     async def load_quote_generator(self) -> QuoteGenerator:
         quote_gen_name = self.ss.quote_generator.lower()
         await self.ss.logging.info(topic="MM", msg=f"Attempting to load quote generator: {quote_gen_name}")
-        
+
         match quote_gen_name:
             case "plain":
                 from smm.quote_generators.plain import PlainQuoteGenerator
@@ -42,8 +42,8 @@ class TradingLogic:
 
             if len(self.ss.data["ohlcv"]) < 100:
                 continue
-                
-            if all(value == 0.0 for value in self.ss.data["ticker"].values()):
+
+            if all(value == 0.0 for value in self.ss.data["ticker"].recordable().values()):
                 continue
 
             if np.all(self.ss.data["orderbook"].bids[:, 0] == 0.0) or np.all(self.ss.data["orderbook"].asks[:, 0] == 0.0):
@@ -51,9 +51,9 @@ class TradingLogic:
 
             if (self.ss.data["tick_size"], self.ss.data["lot_size"]) == (0.0, 0.0):
                 continue
-            
+
             await self.ss.logging.success(topic="MM", msg="Feeds successfully warmed up.")
-            
+
             return None
 
     async def start_loop(self) -> None:

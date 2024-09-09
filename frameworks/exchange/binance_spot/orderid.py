@@ -3,7 +3,7 @@ import numpy as np
 
 from frameworks.exchange.base.orderid import OrderIdGenerator
 
-class BinanceOrderIdGenerator(OrderIdGenerator):
+class BinanceSpotOrderIdGenerator(OrderIdGenerator):
     legal_chars = np.array([i for i in string.ascii_letters + string.digits + "-_.:"])
 
     def __init__(self) -> None:
