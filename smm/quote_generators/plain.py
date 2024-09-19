@@ -5,10 +5,10 @@ from frameworks.tools.numba import nbclip, nbgeomspace, nbsqrt
 from frameworks.tools.trading.weights import generate_geometric_weights
 from smm.sharedstate import SmmSharedState
 from smm.quote_generators.base import (
-    QuoteGenerator, 
-    Side, 
-    TimeInForce, 
-    OrderType, 
+    QuoteGenerator,
+    Side,
+    TimeInForce,
+    OrderType,
     Order
 )
 
@@ -98,14 +98,14 @@ class PlainQuoteGenerator(QuoteGenerator):
 
         for bid_price, bid_size, ask_price, ask_size in zip(
             bid_prices, bid_sizes, ask_prices, ask_sizes
-        ):  
+        ):
             str_level = str(level).zfill(2)
 
             orders.append(
                 self.generate_single_quote(
                     side=Side.BUY,
                     orderType=OrderType.LIMIT,
-                    timeInForce=TimeInForce.POST_ONLY,
+                    timeInForce=TimeInForce.GTC,
                     price=self.round_bid(bid_price),
                     size=self.round_size(bid_size),
                     clientOrderId=self.orderid.generate_order_id(end=str_level)
@@ -116,7 +116,7 @@ class PlainQuoteGenerator(QuoteGenerator):
                 self.generate_single_quote(
                     side=Side.SELL,
                     orderType=OrderType.LIMIT,
-                    timeInForce=TimeInForce.POST_ONLY,
+                    timeInForce=TimeInForce.GTC,
                     price=self.round_bid(ask_price),
                     size=self.round_size(ask_size),
                     clientOrderId=self.orderid.generate_order_id(end=str_level)

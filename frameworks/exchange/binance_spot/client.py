@@ -54,7 +54,8 @@ class BinanceSpotClient(Client):
     def sign_headers(self, method, headers):
         hash_signature = hmac.new(
             key=self.api_secret.encode(),
-            msg=orjson.dumps(headers),
+            #msg=orjson.dumps(headers),
+            msg='&'.join(f"{k}={v}" for k, v in headers.items()).encode(),
             digestmod=hashlib.sha256,
         )
         headers["signature"] = hash_signature.hexdigest()

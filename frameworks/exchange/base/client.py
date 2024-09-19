@@ -90,7 +90,7 @@ class Client(ABC):
         self.timestamp = time_ms()
         return self.timestamp
 
-    async def response_code_checker(self, code: int) -> bool:
+    async def response_code_checker(self, code: int, content: str) -> bool:
         """
         Check the status code and raise exceptions for errors.
 
@@ -119,7 +119,7 @@ class Client(ABC):
 
             case code if code in self.http_exceptions:
                 reason = self.http_exceptions[code]
-                raise Exception(f"Known status code - {code} - {reason}")
+                raise Exception(f"Known status code - {code} - {reason} - {content}")
 
             case _:
                 raise Exception(f"Unknown status code - {code}")
@@ -216,8 +216,8 @@ class Client(ABC):
                 if headers and not signed:
                     headers = self.sign_headers(method, headers)
 
-                if data:
-                    data = orjson.dumps(data).decode()
+                # if data:
+                #     data = orjson.dumps(data).decode()
 
                 await self.logging.debug(
                     topic="CLIENT",
@@ -232,9 +232,10 @@ class Client(ABC):
                     data=data,
                 )
 
+                content = await response.content()
                 # Successful usually within: 200 <= Code <= 299
-                if await self.response_code_checker(response.status_code):
-                    response_json = orjson.loads(await response.content())
+                if await self.response_code_checker(response.status_code, content):
+                    response_json = orjson.loads(content)
 
                     if isinstance(response_json, Dict):
                         retry, msg = self.error_handler(response_json)

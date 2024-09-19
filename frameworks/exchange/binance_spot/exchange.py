@@ -117,7 +117,7 @@ class BinanceSpot(Exchange):
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def get_trades(self, symbol: str) -> Dict:
@@ -127,7 +127,7 @@ class BinanceSpot(Exchange):
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def get_ohlcv(self, symbol: str, interval: str = "1m") -> Dict:
@@ -137,7 +137,7 @@ class BinanceSpot(Exchange):
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def get_ticker(self, symbol: str) -> Dict:
@@ -147,7 +147,7 @@ class BinanceSpot(Exchange):
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def get_open_orders(self, symbol: str) -> Dict:
@@ -156,8 +156,9 @@ class BinanceSpot(Exchange):
         return await self.client.request(
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
+            headers=self.client.base_headers,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def get_position(self, symbol: str) -> Dict:
@@ -166,8 +167,9 @@ class BinanceSpot(Exchange):
         return await self.client.request(
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
+            headers=self.client.base_headers,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def get_account_info(self) -> Dict:
@@ -176,8 +178,9 @@ class BinanceSpot(Exchange):
         return await self.client.request(
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
+            headers=self.client.base_headers,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def get_exchange_info(self) -> Dict:
@@ -187,7 +190,7 @@ class BinanceSpot(Exchange):
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def get_listen_key(self) -> Dict:
@@ -196,8 +199,9 @@ class BinanceSpot(Exchange):
         return await self.client.request(
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
+            headers=self.client.base_headers,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def ping_listen_key(self) -> Dict:
@@ -206,8 +210,9 @@ class BinanceSpot(Exchange):
         return await self.client.request(
             url=self.base_endpoint.url + endpoint.url,
             method=endpoint.method,
+            headers=self.client.base_headers,
             params=params,
-            signed=False,
+            signed=True,
         )
 
     async def warmup(self) -> None:

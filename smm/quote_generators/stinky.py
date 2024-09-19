@@ -5,10 +5,10 @@ from frameworks.tools.numba import nbgeomspace
 from frameworks.tools.trading.weights import generate_geometric_weights
 from smm.sharedstate import SmmSharedState
 from smm.quote_generators.base import (
-    QuoteGenerator, 
-    Side, 
-    TimeInForce, 
-    OrderType, 
+    QuoteGenerator,
+    Side,
+    TimeInForce,
+    OrderType,
     Order,
     Position
 )
@@ -20,7 +20,7 @@ class StinkyQuoteGenerator(QuoteGenerator):
     """
     def __init__(self, ss: SmmSharedState) -> None:
         super().__init__(ss)
-        
+
         self.local_position = Position()
         self.local_position_time = 0.0
 
@@ -73,8 +73,8 @@ class StinkyQuoteGenerator(QuoteGenerator):
             orders.append(
                 self.generate_single_quote(
                     side=Side.BUY,
-                    orderType=OrderType.LIMIT,
-                    timeInForce=TimeInForce.POST_ONLY,
+                    orderType=OrderType.POST_ONLY,
+                    #timeInForce=TimeInForce.GTC,
                     price=self.round_bid(bid_price),
                     size=self.round_size(size),
                     clientOrderId=self.orderid.generate_order_id(end=str_level)
@@ -84,8 +84,8 @@ class StinkyQuoteGenerator(QuoteGenerator):
             orders.append(
                 self.generate_single_quote(
                     side=Side.SELL,
-                    orderType=OrderType.LIMIT,
-                    timeInForce=TimeInForce.POST_ONLY,
+                    orderType=OrderType.POST_ONLY,
+                    #timeInForce=TimeInForce.GTC,
                     price=self.round_bid(ask_price),
                     size=self.round_size(size),
                     clientOrderId=self.orderid.generate_order_id(end=str_level)
@@ -98,7 +98,7 @@ class StinkyQuoteGenerator(QuoteGenerator):
         """
         Purge a position if its duration exceeds a value.
 
-        This method checks if the current position's duration exceeds a specified 
+        This method checks if the current position's duration exceeds a specified
         maximum duration. If it does, it generates a taker order to exit the position.
 
         Steps
@@ -127,10 +127,10 @@ class StinkyQuoteGenerator(QuoteGenerator):
 
             else:
                 max_duration_ms = self.local_position_time + (max_duration * 1000.0)
-            
+
                 if max_duration_ms < time_ms():
                     order.append(self.generate_single_quote(
-                        side=Side.SELL if self.data["position"].size > 0.0 else Side.BUY,    
+                        side=Side.SELL if self.data["position"].size > 0.0 else Side.BUY,
                         orderType=OrderType.MARKET,
                         timeInForce=TimeInForce.GTC,
                         size=self.data["position"].size,
@@ -139,7 +139,7 @@ class StinkyQuoteGenerator(QuoteGenerator):
 
                 self.local_position.reset()
                 self.local_position_time = 0.0
-            
+
         return order
 
     def generate_orders(self, fp_skew: float, vol: float) -> List[Order]:

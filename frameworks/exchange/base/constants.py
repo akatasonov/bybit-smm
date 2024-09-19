@@ -11,12 +11,13 @@ class OrderType:
     MARKET = 1.0
     STOP_LIMIT = 2.0
     TAKE_PROFIT_LIMIT = 3.0
+    POST_ONLY = 4.0
 
 
 class TimeInForce:
     GTC = 0.0
-    FOK = 1.0
-    POST_ONLY = 2.0
+    IOC = 1.0
+    FOK = 2.0
 
 
 class PositionDirection:
@@ -132,6 +133,7 @@ class OrderTypeConverter(StrNumConverter):
         MARKET: str,
         STOP_LIMIT: str = None,
         TAKE_PROFIT_LIMIT: str = None,
+        POST_ONLY: str = None,
     ) -> None:
         super().__init__(
             str_to_num={
@@ -139,6 +141,7 @@ class OrderTypeConverter(StrNumConverter):
                 f"{MARKET}": OrderType.MARKET,
                 f"{STOP_LIMIT}": OrderType.STOP_LIMIT,
                 f"{TAKE_PROFIT_LIMIT}": OrderType.TAKE_PROFIT_LIMIT,
+                f"{POST_ONLY}": OrderType.POST_ONLY,
             }
         )
 
@@ -167,12 +170,12 @@ class TimeInForceConverter(StrNumConverter):
         The string representation for "post only".
     """
 
-    def __init__(self, GTC: str, FOK: str, POST_ONLY: str) -> None:
+    def __init__(self, GTC: str, IOC: str, FOK: str) -> None:
         super().__init__(
             str_to_num={
                 f"{GTC}": TimeInForce.GTC,
                 f"{FOK}": TimeInForce.FOK,
-                f"{POST_ONLY}": TimeInForce.POST_ONLY,
+                f"{IOC}": TimeInForce.IOC,
             }
         )
 

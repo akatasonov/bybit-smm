@@ -7,7 +7,7 @@ class BinanceSpotEndpoints(Endpoints):
 
         self.load_base(
             rest=Endpoint(url="https://api.binance.com", method="NONE"),
-            public_ws=Endpoint(url="wss://stream.binance.com:443", method="NONE"),
+            public_ws=Endpoint(url="wss://stream.binance.com:443/ws", method="NONE"),
             private_ws=Endpoint(url="wss://stream.binance.com:443", method="NONE"),
         )
 

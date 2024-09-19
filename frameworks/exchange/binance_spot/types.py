@@ -4,30 +4,31 @@ from frameworks.exchange.base.constants import PositionDirectionConverter, SideC
 class BinanceSideConverter(SideConverter):
     def __init__(self) -> None:
         super().__init__(
-            BUY="BUY", 
+            BUY="BUY",
             SELL="SELL"
         )
 
 class BinanceOrderTypeConverter(OrderTypeConverter):
     def __init__(self) -> None:
         super().__init__(
-            LIMIT="LIMIT", 
-            MARKET="MARKET", 
-            STOP_LIMIT="STOP", 
-            TAKE_PROFIT_LIMIT="TAKE_PROFIT"
+            LIMIT="LIMIT",
+            MARKET="MARKET",
+            STOP_LIMIT="STOP",
+            TAKE_PROFIT_LIMIT="TAKE_PROFIT",
+            POST_ONLY="LIMIT_MAKER"
         )
 
 class BinanceTimeInForceConverter(TimeInForceConverter):
     def __init__(self) -> None:
         super().__init__(
-            GTC="GTC", 
-            FOK="FOK", 
-            POST_ONLY="GTX"
+            GTC="GTC",
+            IOC="IOC",
+            FOK="FOK"
         )
 
 class BinancePositionDirectionConverter(PositionDirectionConverter):
     def __init__(self) -> None:
         super().__init__(
-            LONG="LONG", 
+            LONG="LONG",
             SHORT="SHORT"
         )

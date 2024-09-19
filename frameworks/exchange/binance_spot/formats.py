@@ -1,4 +1,5 @@
 from typing import List, Dict
+from numpy import format_float_positional
 
 from frameworks.tools.logging import time_ms
 from frameworks.exchange.base.constants import OrderType
@@ -27,7 +28,7 @@ class BinanceSpotFormats(Formats):
             "side": self.convert_side.to_str(order.side),
             "type": self.convert_order_type.to_str(order.orderType),
             "timeInForce": self.convert_tif.to_str(order.timeInForce),
-            "quantity": str(order.size),
+            "quantity": format_float_positional(order.size),
             **({"newClientOrderId": order.clientOrderId} if order.clientOrderId else {}),
             "timestamp": str(time_ms()),
         }
@@ -37,6 +38,10 @@ class BinanceSpotFormats(Formats):
                 return format
 
             case OrderType.LIMIT:
+                format["price"] = str(order.price)
+                return format
+
+            case OrderType.POST_ONLY:
                 format["price"] = str(order.price)
                 return format
 
@@ -71,8 +76,10 @@ class BinanceSpotFormats(Formats):
             **({"origClientOrderId": order.clientOrderId} if order.clientOrderId else {}),
             "symbol": order.symbol,
             "side": self.convert_side.to_str(order.side),
-            "quantity": str(order.size),
-            "price": str(order.price),
+            "type": self.convert_order_type.to_str(order.orderType),
+            "cancelReplaceMode": 0,
+            "quantity": format_float_positional(order.size),
+            "price": format_float_positional(order.price),
             "timestamp": str(time_ms())
         }
 

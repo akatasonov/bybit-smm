@@ -22,7 +22,7 @@ class BinanceSpotTickerHandler(TickerHandler):
     def process(self, recv: Dict) -> None:
         try:
             self.ticker.update(
-                fundingTime=float(recv.get("E", self.ticker.fundingTs)),
+                fundingTime=float(recv.get("E", self.ticker.fundingTime)),
                 fundingRate=0.0,
                 markPrice=float(recv.get("c", self.ticker.markPrice)),
                 indexPrice=float(recv.get("c", self.ticker.indexPrice)),

@@ -12,7 +12,7 @@ quote_generator: "plain"
 parameters:
   plain:
     total_orders: 10            # Consider your rate limits!
-    max_position: 99           # Value in $ (USD)
+    max_position: 95           # Value in $ (USD)
     minimum_spread: 10          # Value in BPS (Basis Points)
     aggressiveness: 0.75        # Must be 0.0 <-> 1.0
 

@@ -49,7 +49,7 @@ class OrderManagementSystem:
             asyncio.Task for creating the order.
         """
         return asyncio.create_task(self.exchange.create_order(new_order))
-    
+
     async def amend_order(self, old_order: Order, new_order: Order) -> asyncio.Task:
         """
         Format an amend order and send to exchange.
@@ -69,7 +69,7 @@ class OrderManagementSystem:
         """
         new_order.clientOrderId = old_order.clientOrderId
         return asyncio.create_task(self.exchange.amend_order(new_order))
-            
+
     async def cancel_order(self, old_order: Order) -> asyncio.Task:
         """
         Format a cancel order and send to exchange.
@@ -85,7 +85,7 @@ class OrderManagementSystem:
             asyncio.Task for canceling the order.
         """
         return asyncio.create_task(self.exchange.cancel_order(old_order))
-    
+
     async def cancel_all_orders(self) -> asyncio.Task:
         """
         Format a cancel order and send to exchange to cancel all orders.
@@ -98,7 +98,7 @@ class OrderManagementSystem:
         return asyncio.create_task(self.exchange.cancel_all_orders(
             symbol=self.symbol
         ))
-    
+
     def find_matched_order(self, new_order: Order) -> Order:
         """
         Attempt to find the order with a matching level number.
@@ -113,8 +113,8 @@ class OrderManagementSystem:
         Parameters
         ----------
         new_order : Order
-            The new order from the quote generator.  
-        
+            The new order from the quote generator.
+
         Returns
         -------
         Order
@@ -157,10 +157,10 @@ class OrderManagementSystem:
         """
         distance_from_mid = abs(old_order.price - self.data["orderbook"].get_mid())
         buffer = distance_from_mid * sensitivity
-        
+
         if new_order.price > (old_order.price + buffer):
             return True
-        
+
         elif new_order.price < (old_order.price - buffer):
             return True
 
@@ -172,53 +172,54 @@ class OrderManagementSystem:
         Update the order book with new orders, canceling and creating orders as necessary.
 
         This method processes new orders and updates the existing orders by:
-        
+
         1. Creating new orders if there are no previously intended orders.
         2. Cancelling any duplicate orders that might be created due to network delay.
         3. Processing each new order based on its type (MARKET or LIMIT).
         4. Replacing out-of-bound orders with new orders when necessary.
-        
+
         Steps:
         ------
         1. If there are no previously intended orders, create all new orders:
             a. Iterate over each new order.
             b. Create a task to send the order to the exchange.
-        
+
         2. Handle duplicate orders caused by network delays:
             a. Check if the number of active orders exceeds the allowed total orders.
             b. Identify duplicate tags by checking the client order ID.
             c. Cancel the duplicate orders.
-        
+
         3. Process each new order based on its type:
             a. If the order type is MARKET:
                 i. Create a task to send the order to the exchange.
-            
+
             b. If the order type is LIMIT:
                 i. Find a matching old order by comparing the client order ID.
                 ii. Check if the new order is out of bounds compared to the old order.
                 iii. If out of bounds, cancel the old order and create a new order.
                 iv. If not out of bounds, create the new order.
-        
+
         Parameters
         ----------
         new_orders : List[Order]
             List of new orders to be processed.
-        
+
         Returns
         -------
         None
         """
         try:
             tasks = []
-            
+
             # Step 1
             if len(self.prev_intended_orders) == 0:
                 for order in new_orders:
                     tasks.append(self.create_order(order))
                     await self.ss.logging.debug(topic="OMS", msg=f"Sending order: {order}")
 
+                await asyncio.gather(*tasks)
                 return None
-            
+
             # Step 2
             if len(self.data["orders"]) > self.ss.parameters["total_orders"]:
                 active_tags = set()
@@ -231,11 +232,11 @@ class OrderManagementSystem:
                     else:
                         tasks.append(self.cancel_order(order))
                         await self.ss.logging.debug(topic="OMS", msg=f"Cancelling duplicate order: {order}")
-            
+
             # Step 3
             for order in new_orders:
                 match order.orderType:
-                    case OrderType.MARKET: 
+                    case OrderType.MARKET:
                         tasks.append(self.create_order(order))
                         await self.ss.logging.debug(topic="OMS", msg=f"Sending order: {order}")
 
@@ -252,7 +253,7 @@ class OrderManagementSystem:
 
                     case _:
                         raise ValueError(f"Invalid order type: {order.orderType}")
-            
+
             results = await asyncio.gather(*tasks)
 
         except Exception as e:
@@ -269,7 +270,7 @@ class OrderManagementSystem:
         """
         try:
             await asyncio.gather(*[
-                self.cancel_all_orders(), 
+                self.cancel_all_orders(),
                 *[self.create_order(order) for order in new_orders]
             ])
 

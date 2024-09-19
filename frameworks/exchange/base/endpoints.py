@@ -74,7 +74,7 @@ class Endpoints(ABC):
             The URL for the private WebSocket endpoint.
         """
         self._endpoints_.update(
-            {"rest": rest, "publicWs": public_ws, "privateWs": private_ws}
+            {"rest": rest, "public_ws": public_ws, "private_ws": private_ws}
         )
 
     def load_required(

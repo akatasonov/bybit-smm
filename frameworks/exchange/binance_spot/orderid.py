@@ -4,7 +4,7 @@ import numpy as np
 from frameworks.exchange.base.orderid import OrderIdGenerator
 
 class BinanceSpotOrderIdGenerator(OrderIdGenerator):
-    legal_chars = np.array([i for i in string.ascii_letters + string.digits + "-_.:"])
+    legal_chars = np.array([i for i in string.ascii_letters + string.digits + "_"])
 
     def __init__(self) -> None:
         super().__init__(36)

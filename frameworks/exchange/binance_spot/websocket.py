@@ -44,7 +44,7 @@ class BinanceSpotWebsocket(WebsocketStream):
                 await asyncio.sleep(timer)
 
             except Exception as e:
-                await self.logging.warning(topic="WS", msg=e)
+                await self.logging.warning(topic="WS", msg=f"orderbook: {e}")
 
     async def refresh_trades_data(self, timer: int = 600) -> None:
         while True:
@@ -54,7 +54,7 @@ class BinanceSpotWebsocket(WebsocketStream):
                 await asyncio.sleep(timer)
 
             except Exception as e:
-                await self.logging.warning(topic="WS", msg=e)
+                await self.logging.warning(topic="WS", msg=f"trades: {e}")
 
     async def refresh_ohlcv_data(self, timer: int = 600) -> None:
         while True:
@@ -64,7 +64,7 @@ class BinanceSpotWebsocket(WebsocketStream):
                 await asyncio.sleep(timer)
 
             except Exception as e:
-                await self.logging.warning(topic="WS", msg=e)
+                await self.logging.warning(topic="WS", msg=f"ohlcv: {e}")
 
     async def refresh_ticker_data(self, timer: int = 600) -> None:
         while True:
@@ -74,7 +74,7 @@ class BinanceSpotWebsocket(WebsocketStream):
                 await asyncio.sleep(timer)
 
             except Exception as e:
-                await self.logging.warning(topic="WS", msg=e)
+                await self.logging.warning(topic="WS", msg=f"ticker: {e}")
 
     def public_stream_sub(self) -> Tuple[str, List[Dict[str, Any]]]:
         request = [
