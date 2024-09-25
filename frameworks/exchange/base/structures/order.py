@@ -71,7 +71,7 @@ class Order:
     @property
     def size(self) -> float:
         return self._size
-    
+
     @property
     def price(self) -> Union[float, None]:
         return self._price
@@ -111,7 +111,7 @@ class Order:
                 and self.clientOrderId == other.clientOrderId
             )
         return False
-    
+
     def __repr__(self) -> str:
         return (
             f"Order(symbol={self.symbol}, side={self.side}, orderType={self.orderType}, "
@@ -188,7 +188,7 @@ class Orders:
     def recordable(self) -> List[Dict]:
         """
         Unwraps the internal structures into widely-used Python structures
-        for easy recordability (databases, logging, debugging etc). 
+        for easy recordability (databases, logging, debugging etc).
 
         Returns
         -------
@@ -196,7 +196,7 @@ class Orders:
             A list of Order objects.
         """
         return [order.to_dict() for order in self._orders_.values()]
-    
+
     def add_single(self, order: Order) -> None:
         """
         Adds a single order to the collection.
@@ -235,10 +235,12 @@ class Orders:
 
     def __getitem__(self, idx: str) -> Order:
         return self._orders_.get(idx, Order())
-    
+
     def __len__(self) -> int:
         return len(self._orders_)
-    
+
     def __repr__(self) -> str:
         return f"Orders({self._orders_})"
-    
+
+    def __iter__(self):
+        return iter(self._orders_.values())
