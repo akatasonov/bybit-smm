@@ -36,14 +36,14 @@ class BinanceSpotOrdersHandler(OrdersHandler):
                     clientOrderId=order.get("clientOrderId")
                 )
 
-                self.orders[new_order.orderId] = new_order
+                self.orders.add_single(new_order)
 
         except Exception as e:
             raise Exception(f"Orders refresh - {e}")
 
     def process(self, recv: Dict) -> None:
         try:
-            order: Dict = recv["o"]
+            order: Dict = recv
 
             if order["s"] != self.symbol:
                 return None
@@ -60,10 +60,10 @@ class BinanceSpotOrdersHandler(OrdersHandler):
                     clientOrderId=order.get("c")
                 )
 
-                self.orders[new_order.orderId] = new_order
+                self.orders.add_single(new_order)
 
             elif order["X"] in self._remove_:
-                del self.orders[order.get("i")]
+                self.orders.remove_single(self.orders[order.get("i")])
 
         except Exception as e:
             raise Exception(f"Orders process - {e}")

@@ -62,7 +62,7 @@ class BinanceSpotClient(Client):
         return headers
 
     def error_handler(self, recv):
-        error_code = int(recv.get("code", 0))
+        error_code = abs(int(recv.get("code", 0)))
         return self.errors.get(
             error_code,
             (False, f"Unknown error code: {error_code}")

@@ -217,6 +217,7 @@ class OrderManagementSystem:
                     tasks.append(self.create_order(order))
                     await self.ss.logging.debug(topic="OMS", msg=f"Sending order: {order}")
 
+                self.prev_intended_orders = new_orders
                 await asyncio.gather(*tasks)
                 return None
 
@@ -257,7 +258,17 @@ class OrderManagementSystem:
             results = await asyncio.gather(*tasks)
 
         except Exception as e:
-            await self.ss.logging.error(topic="OMS", msg=e)
+            #await self.ss.logging.error(topic="OMS", msg=e)
+            trace = []
+            tb = e.__traceback__
+            while tb is not None:
+                trace.append({
+                    "filename": tb.tb_frame.f_code.co_filename,
+                    "name": tb.tb_frame.f_code.co_name,
+                    "lineno": tb.tb_lineno
+                })
+                tb = tb.tb_next
+            await self.ss.logging.error(topic="OMS", msg=f"msg: {e}, trace: {trace}")
 
     async def update_simple(self, new_orders: List[Order]) -> None:
         """

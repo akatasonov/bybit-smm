@@ -32,8 +32,8 @@ class BinanceSpotWebsocket(WebsocketStream):
         self.public_handler_map["bookTicker"] = self.public_handler_map["depthUpdate"]
 
         self.private_handler_map = {
-            "ORDER_TRADE_UPDATE": BinanceSpotOrdersHandler(self.data["orders"], self.symbol),
-            "ACCOUNT_UPDATE": BinanceSpotPositionHandler(self.data["position"], self.symbol),
+            "executionReport": BinanceSpotOrdersHandler(self.data["orders"], self.symbol),
+            #"ACCOUNT_UPDATE": BinanceSpotPositionHandler(self.data["position"], self.symbol),
         }
 
     async def refresh_orderbook_data(self, timer: int = 600) -> None:
@@ -93,6 +93,8 @@ class BinanceSpotWebsocket(WebsocketStream):
 
     async def public_stream_handler(self, recv: Dict[str, Any]) -> None:
         try:
+            # if recv["e"] == "executionReport":
+            #     await self.ss.logging.debug(topic="WS", msg=f"executionReport: {recv}")
             self.public_handler_map[recv["e"]].process(recv)
 
         except KeyError as ke:
