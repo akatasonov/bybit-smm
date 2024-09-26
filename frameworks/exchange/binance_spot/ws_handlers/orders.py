@@ -66,4 +66,5 @@ class BinanceSpotOrdersHandler(OrdersHandler):
                 self.orders.remove_single(self.orders[order.get("i")])
 
         except Exception as e:
-            raise Exception(f"Orders process - {e}")
+            raise Exception(f"Orders process - {e.__traceback__}")
+            #raise e

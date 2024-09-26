@@ -12,6 +12,17 @@ from frameworks.exchange.binance_spot.ws_handlers.orders import BinanceSpotOrder
 from frameworks.exchange.binance_spot.ws_handlers.position import BinanceSpotPositionHandler
 
 
+class DoNotProcess:
+    """
+    Placeholder class to indicate
+    that the message should not be processed.
+    """
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def process(self, *args, **kwargs):
+        pass
+
 class BinanceSpotWebsocket(WebsocketStream):
     """
     Handles Websocket connections and data management for Binance.
@@ -33,7 +44,7 @@ class BinanceSpotWebsocket(WebsocketStream):
 
         self.private_handler_map = {
             "executionReport": BinanceSpotOrdersHandler(self.data["orders"], self.symbol),
-            #"ACCOUNT_UPDATE": BinanceSpotPositionHandler(self.data["position"], self.symbol),
+            "outboundAccountPosition": DoNotProcess(), # do not need to handle this for now
         }
 
     async def refresh_orderbook_data(self, timer: int = 600) -> None:
@@ -93,8 +104,6 @@ class BinanceSpotWebsocket(WebsocketStream):
 
     async def public_stream_handler(self, recv: Dict[str, Any]) -> None:
         try:
-            # if recv["e"] == "executionReport":
-            #     await self.ss.logging.debug(topic="WS", msg=f"executionReport: {recv}")
             self.public_handler_map[recv["e"]].process(recv)
 
         except KeyError as ke:
